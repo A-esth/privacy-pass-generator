@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "rootDir": "ts",
+        "outDir": "dist",
+        "module": "commonjs",
+        "strict": true
+    }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "privacy-pass-generator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/A-esth/privacy-pass-generator",
+  "author": "A-esth <theaesthetocrat@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "tsc": "node_modules\\.bin\\tsc.cmd",
+    "start": "tsc && node dist/src/index.js",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "typescript": "^4.7.4"
+  }
+}

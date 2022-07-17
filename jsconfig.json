@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "@utils/*":["ts/utils/*"],
+            "@src/*":["ts/src/*"]
+        }
+    }
+}
