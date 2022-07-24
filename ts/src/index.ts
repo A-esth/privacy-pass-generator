@@ -1,24 +1,61 @@
+const fs = require('fs');
 
-(() : void =>{
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const randomUseragent = require('random-useragent');
 
-    // Require our hcaptchaToken method
-const { hcaptchaToken } = require("puppeteer-hcaptcha");
+puppeteer.use(StealthPlugin());
 
-(async () => {
-  // Create Start Time
-  const startTime : number = Date.now();
+const commandLineArgs = require('command-line-args');
 
-  // Call hcaptchaToken method passing in your url
-  let token = await hcaptchaToken("https://csgostats.gg/match/72424083/watch/4466869596d606538282d5c9eceffd96c2bc91da60adbdfe480791d3ce022a10");
+const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
 
-  // Get End Time
-  const endTime : number = Date.now();
+( async ()=>{
 
-  // Log timed result to console
-  console.log(`Completed in ${(endTime - startTime) / 1000} seconds`);
+    const optionDefinitions = [
+        {name: "output", alias:"o", type: String}
+    ]
 
-  // P0_eyJ0eXAiOiJ...
-  console.log(token);
+    const options = commandLineArgs(optionDefinitions)
+    const {output: path} = options
+
+    const browser = await puppeteer.launch({
+        'headless': false,
+        devtools: false,
+        args: [
+                `--disable-extensions-except=${extension}`, 
+                `--load-extension=${extension}`,
+                '--enable-automation'
+  ]
+    })
+
+    const page = await browser.newPage()
+    await page.goto('https://captcha.website')
+    
+  // Activating Dev Mode
+  /*const [chromeExtenstionsTab] = await browser.pages();
+  await chromeExtenstionsTab.goto("chrome://extensions");
+  const devModeToggle = await chromeExtenstionsTab.evaluateHandle(
+    'document.querySelector("body > extensions-manager").shadowRoot.querySelector("extensions-toolbar").shadowRoot.querySelector("#devMode")'
+  );
+  await devModeToggle.click();*/
+
+  // The solving process goes here.
+  await new Promise<void>((resolve, reject) : void=>{
+    setTimeout(()=>{
+      resolve()
+    }, 120*1000)
+  }) 
+
+  // Trying to get a hold 
+  await page.goto('chrome-extension://podnclopaidnlkcbgkpmjlomckhmgalc/popup.html')
+
+
+  const localStorage = await page.evaluate(() =>  Object.assign({}, window.localStorage));
+  const tokens = localStorage['cf-tokens']
+
+  fs.writeFileSync(path, 'module.exports = \n'+JSON.stringify(tokens, null, 2))
+    
+    //await browser.close()
+
 })();
-
-})()

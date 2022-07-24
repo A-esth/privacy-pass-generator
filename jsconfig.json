@@ -3,7 +3,8 @@
         "baseUrl": "./",
         "paths": {
             "@utils/*":["ts/utils/*"],
-            "@src/*":["ts/src/*"]
+            "@src/*":["ts/src/*"],
+            "@privacy-pass-extension":["C:\\Users\\Wise\\Documents\\PROJECTS\\TESTS\\privacy-pass-protocol\\experimental-build\\challenge-bypass-extension\\dist"]
         }
     }
 }

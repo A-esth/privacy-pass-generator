@@ -3,6 +3,8 @@
         "rootDir": "ts",
         "outDir": "dist",
         "module": "commonjs",
-        "strict": true
-    }
+        //"strict": true,
+        "allowJs": true
+    },
+    "exclude": ["./privacy-pass.ext/*","./dist/*"]
 }
