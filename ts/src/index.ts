@@ -6,6 +6,8 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const randomUseragent = require('random-useragent');
 
+const dotenv = require('dotenv')
+
 puppeteer.use(StealthPlugin());
 
 const {
@@ -52,7 +54,9 @@ const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
                 '--enable-automation'
   ]
     })
-
+    console.log(browser)
+   // const ID2 = "fippkiffcenldphbnipngjoadodngmeo"
+    const ID = "fippkiffcenldphbnipngjoadodngmeo"
     const page = await browser.newPage()
     await page.goto('https://captcha.website')
     
@@ -77,6 +81,7 @@ const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
   console.log(`[+] This is the target ===> ${target}`);
   var Images = await GetImages(capFrame2);
   console.log(`[+] We got ===> ${Object.keys(Images).length} images`);
+
   var site = await page.evaluate(() => document.location.href);
   console.log(`[+] This is the SITE ===> ${site}`);
   const startSolving = await Solve(Images, target, site);
@@ -93,14 +98,13 @@ const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
   /*
     Just a utility in case we need dev mode on.
   */
-  const [chromeExtenstionsTab] = await browser.pages();
+  const chromeExtenstionsTab = await browser.newPage();
   await chromeExtenstionsTab.goto("chrome://extensions");
   const devModeToggle = await chromeExtenstionsTab.evaluateHandle(
     'document.querySelector("body > extensions-manager").shadowRoot.querySelector("extensions-toolbar").shadowRoot.querySelector("#devMode")'
   );
   console.log(devModeToggle)
   await devModeToggle.click();
-
 
   // Obtaining the extension ID part
   /*
@@ -109,17 +113,17 @@ const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
   */
   let extensionID : ElementHandle | undefined
 
-  extensionID = await chromeExtenstionsTab.evaluateHandle(()=>{
-    return document.querySelector("body > extensions-manager").shadowRoot.querySelector("#viewManager").querySelector("#items-list").shadowRoot.querySelector("div#container > div#content-wrapper > div#items-container > extensions-item")/*.shadowRoot.querySelector("#extension-id")*/
+  extensionID = await chromeExtenstionsTab.evaluate(()=>{
+    return document.querySelector("body > extensions-manager").shadowRoot.querySelector('#viewManager').querySelector('#items-list').shadowRoot.querySelector('div#container > div#content-wrapper > div.items-container > extensions-item').id
   }
 
   );
-  console.log(extensionID)
+  console.log(`${extensionID}`)
   
   await page.waitForTimeout(10000);
 
   // Accessing the storage part 
-  /*if(extensionID!==undefined){
+  if(extensionID!==undefined){
     await page.goto(`chrome-extension://${extensionID}/popup.html`)
 
 
@@ -127,8 +131,8 @@ const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
     const tokens = localStorage['cf-tokens']
 
     fs.writeFileSync(path, 'module.exports = \n'+JSON.stringify(tokens, null, 2))
-  }*/
-    
-  //await browser.close()
+  }
+     
+  await browser.close()
 
 })();

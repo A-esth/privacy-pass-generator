@@ -4,13 +4,13 @@ const axios = require("axios");
 const apiURL = "https://solve.shimul.me/api/solve";
 
 const dotenv = require('dotenv')
-console.log(dotenv)
 dotenv.config()
+console.log(dotenv)
 
 
 let info = {
-  API_KEY: process.env.API_KEY,
-  UID: process.env.UID
+  API_KEY:  process.env.API_KEY  ,
+  UID:  process.env.UID 
 };
 
 function z(e) {
