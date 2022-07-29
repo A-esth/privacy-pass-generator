@@ -7,13 +7,15 @@
   "license": "MIT",
   "scripts": {
     "tsc": "node_modules\\.bin\\tsc.cmd",
-    "start": "tsc && cd dist/src && node ",
+    "start": "tsc && cd dist/src && node index.js --output=privacy-pass.token",
     "dev": "tsc --watch"
   },
   "dependencies": {
+    "@types/puppeteer": "^5.4.6",
     "asn1-parser": "^1.1.8",
     "axios": "^0.27.2",
     "command-line-args": "^5.2.1",
+    "dotenv": "^16.0.1",
     "fs": "^0.0.1-security",
     "puppeteer": "^15.4.0",
     "puppeteer-extra": "^3.3.4",

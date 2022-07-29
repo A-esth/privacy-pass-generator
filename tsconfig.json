@@ -1,10 +1,12 @@
 {
     "compilerOptions": {
+        "target": "ES2017",
         "rootDir": "ts",
         "outDir": "dist",
         "module": "commonjs",
         //"strict": true,
-        "allowJs": true
+        "allowJs": true,
+        "noEmit": false
     },
     "exclude": ["./privacy-pass.ext/*","./dist/*"]
 }
