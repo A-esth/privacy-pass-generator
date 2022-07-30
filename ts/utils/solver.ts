@@ -113,10 +113,10 @@ export class HCaptchaSolver {
                     apikey: this.API_KEY,
                 },
                 data: {
-                    _imageLinks,
-                    _keyword,
+                    images:_imageLinks,
+                    target:_keyword,
                     data_type: "image",
-                    _site,
+                    site:_site,
                     site_key: "33f96e6a-38cd-421b-bb68-7806e1764460",
                 },
             });
