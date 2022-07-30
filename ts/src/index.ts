@@ -1,20 +1,14 @@
 import { Browser, Page } from "puppeteer"
 
+
 import * as fs from 'fs'
 import  commandLineArgs from 'command-line-args'
 import  puppeteer from 'puppeteer-extra'
 import  StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import env from './env.config.js'
+import { HCaptchaSolver } from "../utils/solver.js"
 
-
-
-import {
-  Solve,
-  CLickImages,
-  GetImages,
-  GetTarget,
-  check_skip_or_verify,
-} from "../utils/index.js";
-
+// Load .env
 
 puppeteer.use(StealthPlugin());
 
@@ -94,52 +88,23 @@ const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
 
     const page = await browser.newPage()
     await page.goto('https://captcha.website')
-    
-     await page.waitForTimeout(10000);
-    ///////////////
-    const elementHandle = await page.waitForSelector(
-    `#cf-hcaptcha-container > div:nth-child(2) > iframe`,
-  );
-  const capFrame = await elementHandle.contentFrame();
-  await capFrame.waitForSelector("div #checkbox");
-  console.log("[+] CapFrame Selecting checkbox");
-  await capFrame.click("div #checkbox");
-  console.log("[+] Clicked");
-  await page.waitForTimeout(4000);
-  ///////////////////
-  let ifram2 = await page.waitForSelector(
-    "body > div:nth-child(5) > div:nth-child(1) > iframe",
-  );
-  const capFrame2 = await ifram2.contentFrame();
-  //////////////////
-  var target = await GetTarget(capFrame2, page);
-  console.log(`[+] This is the target ===> ${target}`);
-  var Images = await GetImages(capFrame2);
-  console.log(`[+] We got ===> ${Object.keys(Images).length} images`);
 
-  var site = await page.evaluate(() => document.location.href);
-  console.log(`[+] This is the SITE ===> ${site}`);
-  const startSolving = await Solve(Images, target, site);
-  console.log(`[+] Pictures Solved ===> ${startSolving.solution}`);
-  await CLickImages(startSolving.solution, capFrame2);
-  await check_skip_or_verify(capFrame2);
-  const Img2 = await GetImages(capFrame2);
-  const startSolving2 = await Solve(Img2, target, site);
-  console.log(`[+] Pictures Solved ===> ${startSolving2.solution}`);
-  await CLickImages(startSolving2.solution, capFrame2);
-  await check_skip_or_verify(capFrame2);
+    await page.waitForTimeout(10000);
 
-  await page.waitForTimeout(15000);
+  const hCaptchaSolver = new HCaptchaSolver(env.API_KEY, env.UID, page)
+  await hCaptchaSolver.solve()
+
+  await page.waitForTimeout(10000);
 
   // Accessing the storage part 
   if(typeof extensionID !== 'undefined' && extensionID!==null){
 
-    const tokens = await extensionTab.evaluate(() =>  Object.assign({}, window.localStorage.getItem('cf-tokens')));
+    const localStorage : Storage = await extensionTab.evaluate(() =>  Object.assign({}, window.localStorage));
+    const tokens = localStorage['cf-tokens']
 
-    fs.writeFileSync(path, 'module.exports = \n'+Object.values(tokens).join(''))
-    console.log('Wrote token to file.')
+    fs.writeFileSync(path, 'module.exports = \n'+JSON.stringify(tokens, null, 2))
   }
      
-  await browser.close()
+  //await browser.close()
 
 })();

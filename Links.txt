@@ -1,7 +1,0 @@
-Privacy-pass-sliders:https://www.ietf.org/proceedings/108/slides/slides-108-privacypass-privacy-pass-the-protocol-00
-
-draft-privacy-pass : https://github.com/alxdavids/draft-privacy-pass/blob/master/draft-privacy-pass.md
-
-Privacy Pass: Bypassing Internet Challenges :https://www.petsymposium.org/2018/files/papers/issue3/popets-2018-0026.pdf
-
-
