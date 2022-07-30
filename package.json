@@ -5,25 +5,32 @@
   "repository": "https://github.com/A-esth/privacy-pass-generator",
   "author": "A-esth <theaesthetocrat@gmail.com>",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "tsc": "node_modules\\.bin\\tsc.cmd",
     "start": "tsc && cd dist/src && node index.js --output=privacy-pass.token",
+    "roll": "tsc && cd dist/src && node",
     "dev": "tsc --watch"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/command-line-args": "^5.2.0",
+    "@types/lodash": "^4.14.182",
     "@types/puppeteer": "^5.4.6",
     "asn1-parser": "^1.1.8",
     "axios": "^0.27.2",
     "command-line-args": "^5.2.1",
     "dotenv": "^16.0.1",
     "fs": "^0.0.1-security",
+    "lodash": "^4.17.21",
     "puppeteer": "^15.4.0",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-stealth": "^2.11.0",
     "qs": "^6.11.0",
     "random-useragent": "^0.5.0",
     "sjcl": "^1.0.8",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "winston": "^3.8.1"
   },
   "devDependencies": {
     "@types/qs": "^6.9.7"

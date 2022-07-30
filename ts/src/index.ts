@@ -1,25 +1,22 @@
-import { ElementHandle, JSHandle } from "puppeteer";
+import { Browser, Page } from "puppeteer"
 
-const fs = require('fs');
+import * as fs from 'fs'
+import  commandLineArgs from 'command-line-args'
+import  puppeteer from 'puppeteer-extra'
+import  StealthPlugin from 'puppeteer-extra-plugin-stealth'
 
-const puppeteer = require('puppeteer-extra');
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const randomUseragent = require('random-useragent');
 
-const dotenv = require('dotenv')
 
-puppeteer.use(StealthPlugin());
-
-const {
+import {
   Solve,
   CLickImages,
   GetImages,
   GetTarget,
   check_skip_or_verify,
-} = require("../utils/utils");
+} from "../utils/index.js";
 
 
-const commandLineArgs = require('command-line-args');
+puppeteer.use(StealthPlugin());
 
 const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
 
@@ -32,8 +29,8 @@ const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
     const options = commandLineArgs(optionDefinitions)
     const {output: path} = options
 
-    const browser = await puppeteer.launch({
-        'headless': false,
+    const browser : Browser = await puppeteer.launch({
+        headless: false,
         devtools: false,
         ignoreHTTPSErrors: true,
         userDataDir: `data`,
@@ -54,9 +51,47 @@ const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
                 '--enable-automation'
   ]
     })
-    console.log(browser)
-   // const ID2 = "fippkiffcenldphbnipngjoadodngmeo"
-    const ID = "fippkiffcenldphbnipngjoadodngmeo"
+
+  // Activating Dev Mode
+  /*
+    Just a utility in case we need dev mode on.
+  */
+  const chromeExtenstionsTab : Page = await browser.newPage();
+  await chromeExtenstionsTab.goto("chrome://extensions");
+
+  const devModeToggle = await chromeExtenstionsTab.evaluateHandle(
+    'document.querySelector("body > extensions-manager").shadowRoot.querySelector("extensions-toolbar").shadowRoot.querySelector("#devMode")'
+  ) as unknown as HTMLButtonElement;
+
+  await devModeToggle.click();
+
+  // Obtaining the extension ID part
+  /*
+    ISSUE
+    When you goto "chrome://extensions", the privacy pass item is hard to scrape.
+  */
+  let extensionID : string | undefined | null
+
+  extensionID = await chromeExtenstionsTab.evaluate(()=>{
+    return document.querySelector("body > extensions-manager").shadowRoot.querySelector('#viewManager').querySelector('#items-list').shadowRoot.querySelector('div#container > div#content-wrapper > div.items-container > extensions-item').id
+  }
+
+  );
+
+  const extensionTab : Page = await browser.newPage()
+  await extensionTab.goto(`chrome-extension://${extensionID}/popup.html`)
+
+  // Clear tokens if already existing (OPTIONAL)
+  /*
+    ISSUE : Cannot get a hold of the element to click on.
+    If it will be a different run everytime then this doesn't matter.
+  */
+  /*const clearButton = await extensionTab.evaluate(()=>{
+    return document.querySelector("#root > div > div.hTjWAPKKOGmumZ5O62y0WA\\=\\= > div:nth-child(2)")
+  })
+  clearButton.click()*/
+
+
     const page = await browser.newPage()
     await page.goto('https://captcha.website')
     
@@ -94,43 +129,15 @@ const extension = `${process.cwd()}\\..\\..\\privacy-pass.ext`;
   await CLickImages(startSolving2.solution, capFrame2);
   await check_skip_or_verify(capFrame2);
 
-  // Activating Dev Mode
-  /*
-    Just a utility in case we need dev mode on.
-  */
-  const chromeExtenstionsTab = await browser.newPage();
-  await chromeExtenstionsTab.goto("chrome://extensions");
-  const devModeToggle = await chromeExtenstionsTab.evaluateHandle(
-    'document.querySelector("body > extensions-manager").shadowRoot.querySelector("extensions-toolbar").shadowRoot.querySelector("#devMode")'
-  );
-  console.log(devModeToggle)
-  await devModeToggle.click();
-
-  // Obtaining the extension ID part
-  /*
-    ISSUE
-    When you goto "chrome://extensions", the privacy pass item is hard to scrape.
-  */
-  let extensionID : ElementHandle | undefined
-
-  extensionID = await chromeExtenstionsTab.evaluate(()=>{
-    return document.querySelector("body > extensions-manager").shadowRoot.querySelector('#viewManager').querySelector('#items-list').shadowRoot.querySelector('div#container > div#content-wrapper > div.items-container > extensions-item').id
-  }
-
-  );
-  console.log(`${extensionID}`)
-  
-  await page.waitForTimeout(10000);
+  await page.waitForTimeout(15000);
 
   // Accessing the storage part 
-  if(extensionID!==undefined){
-    await page.goto(`chrome-extension://${extensionID}/popup.html`)
+  if(typeof extensionID !== 'undefined' && extensionID!==null){
 
+    const tokens = await extensionTab.evaluate(() =>  Object.assign({}, window.localStorage.getItem('cf-tokens')));
 
-    const localStorage = await page.evaluate(() =>  Object.assign({}, window.localStorage));
-    const tokens = localStorage['cf-tokens']
-
-    fs.writeFileSync(path, 'module.exports = \n'+JSON.stringify(tokens, null, 2))
+    fs.writeFileSync(path, 'module.exports = \n'+Object.values(tokens).join(''))
+    console.log('Wrote token to file.')
   }
      
   await browser.close()

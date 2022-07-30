@@ -1,17 +1,17 @@
+//import {config} from 'dotenv'
+import axios from "axios"
 
 
-const axios = require("axios");
-const apiURL = "https://solve.shimul.me/api/solve";
-
-const dotenv = require('dotenv')
-dotenv.config()
-console.log(dotenv)
-
+// Load .env
+//config()
+import env from './env.config.js'
 
 let info = {
-  API_KEY:  process.env.API_KEY  ,
-  UID:  process.env.UID 
+  API_KEY:  env.API_KEY,
+  UID:  env.UID 
 };
+
+const apiURL = "https://solve.shimul.me/api/solve";
 
 function z(e) {
   e = e.match(/(?<=\(\").+?(?=\"\))/g);
